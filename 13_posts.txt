@@ -1,0 +1,455 @@
+{
+    "1": {
+        "answers": [
+            {
+                "body": "<p>You could use MySQLi (PHP extension) which is class based by default instead of MySQL. It \nis very easy to set up multiple connections. You are, however, required to know the connection you are querying always.</p>\n\n<hr>\n\n<p>Congrats with the first question.</p>\n",
+                "comments": [],
+                "meta_data": {
+                    "CommentCount": "0",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T21:04:27.663",
+                    "Id": "3",
+                    "ParentId": "1",
+                    "Score": "19"
+                }
+            },
+            {
+                "body": "<p>From your question I infer that you're thinking of having several instances of the DB class.  If so I'd suggest abstracting the connection out to another class and holding a reference to the same connection in each DB instance.</p>\n\n<p>You could then set your connection up as a singleton and thus only connect &amp; disconnect once.</p>\n\n<p>Apologies in advance if I've missed anything here - my PHP is far from fluent.</p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T21:14:45.420",
+                        "Id": "13",
+                        "Score": "0",
+                        "body": "Yes. I will have multiple instances of the database class. I just wasn't sure on a good approach to make for abstracting away the connection, or if I even should."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T21:58:41.740",
+                        "Id": "49",
+                        "Score": "0",
+                        "body": "The thing is I've been stung in the past by using more than one connection when I could've shared the connection so I'd say \"abstract it unless you can think of a very good reason not to\""
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "2",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T21:10:07.140",
+                    "Id": "5",
+                    "ParentId": "1",
+                    "Score": "18"
+                }
+            },
+            {
+                "body": "<p>You might also look into the built-in php command mysql_pconnect().  This differs from mysql_connect in that it opens a persistent connection to the DB the first time it is called, and each subsequent time, it checks to see if an existing connection to that database exists and uses that connection instead.  You should then remove the mysql_close command from the destructor, as they will persist between page loads.</p>\n\n<p>The php manual page: <a href=\"http://php.net/manual/en/function.mysql-pconnect.php\">http://php.net/manual/en/function.mysql-pconnect.php</a></p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T21:19:33.573",
+                        "Id": "19",
+                        "Score": "0",
+                        "body": "I read about that, and it sounds very enticing. However, how do you close the connection? in the docs it says the mysql_close() doesn't work. Do you just rely on mysql server to close it when it has been inactive for so long. I'd like to know that once all the work is done that the connection is closed."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T21:22:54.403",
+                        "Id": "23",
+                        "Score": "0",
+                        "body": "You don't close the connection explicitly.  It eventually gets closed by the php internals after a certain time has elapsed without use.  This eliminates all of the overhead involved with repeatedly opening and closing connections, and allows individual page requests to be much faster."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T21:26:33.283",
+                        "Id": "28",
+                        "Score": "0",
+                        "body": "Okay, i'll do some playing with this too. Thanks."
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "3",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T21:12:43.930",
+                    "Id": "6",
+                    "ParentId": "1",
+                    "Score": "16"
+                }
+            },
+            {
+                "body": "<p>use an abstraction library like Pear MDB2 for your database connection. </p>\n\n<p>This abstracts all the connection logic away from your code, so should ever change your database (mysql to SQLite,etc) you won't have to change your code. </p>\n\n<p><a href=\"http://pear.php.net/manual/en/package.database.mdb2.php\">http://pear.php.net/manual/en/package.database.mdb2.php</a></p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T21:42:57.963",
+                        "Id": "38",
+                        "Score": "3",
+                        "body": "The last stable release was in [2007](http://pear.php.net/package/MDB2)...  So either it's good to the point where it doesn't need updating (doubt it, since there's a beta in the works), or it's just plain inactive (more likely)  There are tons of better abstraction layers (IMHO) that are more actively developed than this..."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T21:46:32.370",
+                        "Id": "39",
+                        "Score": "1",
+                        "body": "i haven't used PHP in a while,so please feel free to add it in this thread or create a new response :) my point is that a much better solution is to abstract the connection/query logic away via a library, more so than a specific library."
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "2",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T21:32:29.907",
+                    "Id": "19",
+                    "ParentId": "1",
+                    "Score": "13"
+                }
+            },
+            {
+                "body": "<p>I don't think it makes any difference in regards to connecting to the database within the construction or within a connect method, what i do think you need to change is those die commands.</p>\n\n<p>using die causes the script to halt and send 1 little message to the user, who would think this is rubbish, and never visit your site again :( :(</p>\n\n<p>What you should be doing is catching your errors, and redirecting to a static page where you can show a very nice message to the user, fully apologising for the technical issues your having.</p>\n\n<p>You can also have an box that says, Enter your email address and we will email you when were back on line, you get the idea.</p>\n\n<p>as for the code I would go down the lines of:</p>\n\n<pre><code>class Database\n{\n    public function __construct($autoconnect = false)\n    {\n        //Here you would 'globalize' your config and set it locally as a reference.\n        if($autoconnect === true)\n        {\n             $this-&gt;connect();\n        }\n    }\n\n    public function connect()\n    {\n        if($this-&gt;connected() === false)\n        {\n             $result = $this-&gt;driver-&gt;sendCommand(\"connect\");\n             if($result === true)\n             {\n                  $this-&gt;setConnectionState(\"active\");\n                  $this-&gt;setConnectionResource($this-&gt;driver-&gt;sendCommand(\"get_resource\"));\n             }else\n             {\n                 throw new DatabaseConnectionError($this-&gt;driver-&gt;sendCommand(\"getDriverError\"));\n             }\n        }\n    }\n}\n</code></pre>\n\n<p>This gives you more functionality in the long run as every action is decidable within your APP, nothing is auto fired on default.</p>\n\n<p>you can simple use try,catch blocks to maintain your error reporting.</p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-22T09:29:26.970",
+                        "Id": "239",
+                        "Score": "0",
+                        "body": "+1 for the use of try/catch. Also I have experienced issues with failures thrown in the constructor: you do not have an instance of the object to implement whatever fallback mechanism would make sense, which in my case was using large parts of code present in the class... Without a valid instance, you cannot call instance methods, and I had to make some static methods, which was less than ideal."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-22T12:33:19.980",
+                        "Id": "244",
+                        "Score": "0",
+                        "body": "Thanks, But I'me struggling to understand you, Can you please rephrase your comment please."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-22T17:12:59.320",
+                        "Id": "251",
+                        "Score": "0",
+                        "body": "Sure :) Throwing exceptions is fine as long as you add code to try and catch them. Avoid code that throws exceptions in a constructor though, this could lead to some issues that I have experienced: in case of failure, you have no object created, and you might miss that in your catch block, if you want to reuse behaviors defined for this object. I would rather recommend to create the connection in a regular method, e.g. init() or connect(), called on the object after it has been created, not directly in the constructor."
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "3",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T23:31:15.977",
+                    "Id": "41",
+                    "ParentId": "1",
+                    "Score": "11"
+                }
+            }
+        ],
+        "body": "<p>I am playing with different ways to do database interaction in PHP, and one of the ideas I have been playing with is connecting to the DB in the constructor and disconnecting in the destructor. This is the code from my <code>Database</code> class.</p>\n\n<pre><code>function __construct()\n{\n  $this-&gt;link = mysql_connect($this-&gt;server.':'.$this-&gt;port, $this-&gt;username);\n  if(!$this-&gt;link)\n    die('Could not connect: '.mysql_error());\n\n  if(!mysql_select_db($this-&gt;database, $this-&gt;link))\n    die('Could not select database: '.mysql_error());\n}    \n\nfunction __destruct()\n{\n  if(mysql_close($this-&gt;link))\n    $this-&gt;link = null; \n}\n</code></pre>\n\n<p>This works well, my only reservation is that if I need to connect several to hit the database several times it will do multiple connections and disconnects. If I do that a lot I can see, maybe, potential problems. Is this a concern or is there a better way to do this? And is my code even up to snuff in general?</p>\n",
+        "comments": [
+            {
+                "ContentLicense": "CC BY-SA 4.0",
+                "CreationDate": "2020-11-18T07:49:12.973",
+                "Id": "496986",
+                "Score": "0",
+                "body": "Look at the URL number. This is the first question humanity ever asked here!"
+            }
+        ],
+        "meta_data": {
+            "AcceptedAnswerId": "5",
+            "CommentCount": "1",
+            "ContentLicense": "CC BY-SA 3.0",
+            "CreationDate": "2011-01-19T21:02:47.183",
+            "Id": "1",
+            "Score": "39",
+            "Tags": [
+                "php",
+                "mysql",
+                "constructor"
+            ],
+            "Title": "Database connection in constructor and destructor"
+        }
+    },
+    "9": {
+        "answers": [
+            {
+                "body": "<p>Break this down into several methods - it's very long, meaning it's not easy to read.</p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-20T00:28:01.803",
+                        "Id": "67",
+                        "Score": "1",
+                        "body": "Actually it is even longer ;) I wasn't able to post the whole method because of the character limit;)"
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-21T01:10:53.220",
+                        "Id": "176",
+                        "Score": "2",
+                        "body": "@Roflcoptr You must be trying to beat my former supervisor 1200 lines-long methods. Definitely break it down, it is a nightmare in the making."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-21T10:24:32.597",
+                        "Id": "180",
+                        "Score": "1",
+                        "body": "+1 definitely break it down to smaller methods - and use some Linq as well!!"
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 3.0",
+                        "CreationDate": "2015-05-05T01:31:34.790",
+                        "Id": "161872",
+                        "Score": "0",
+                        "body": "@Roflcoptr In the future if you need to post a lot of code maybe try [GitHub Gists](https://gist.github.com/). *(Although, it's likely a good indicator that your example it too long if it won't fit.)*"
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "4",
+                    "ContentLicense": "CC BY-SA 3.0",
+                    "CreationDate": "2011-01-19T21:24:59.400",
+                    "Id": "13",
+                    "ParentId": "9",
+                    "Score": "63"
+                }
+            },
+            {
+                "body": "<p>Give some thought to abstracting the decisions around setting the top of the canvas (cf. all those <code>if</code> statements) out into a set of classes - or perhaps a single class with different suitable parameters in the constructor.  A lot of this code differs only in the numbers being applied.</p>\n\n<p>A simple rule is \"Abstract the concept that varies\".</p>\n",
+                "comments": [],
+                "meta_data": {
+                    "CommentCount": "0",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T21:27:45.830",
+                    "Id": "15",
+                    "ParentId": "9",
+                    "Score": "18"
+                }
+            },
+            {
+                "body": "<p>For the n steps bit, consider using recursion - but tread carefully.</p>\n",
+                "comments": [],
+                "meta_data": {
+                    "CommentCount": "0",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T21:29:04.710",
+                    "Id": "17",
+                    "ParentId": "9",
+                    "Score": "6"
+                }
+            },
+            {
+                "body": "<p>I might recommend the use of switch statements and white space along with LRE's suggestion of breaking this into multiple methods. It also looks like you have quite a bit of repeated code maybe try to break that out for sure it its own methods.</p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-19T22:41:45.367",
+                        "Id": "52",
+                        "Score": "0",
+                        "body": "In this case switch may not be the best option. It would make the code use case instead of if/else but the code will almost be equally lengthy"
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "1",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T21:29:43.017",
+                    "Id": "18",
+                    "ParentId": "9",
+                    "Score": "9"
+                }
+            },
+            {
+                "body": "<p>This code...</p>\n\n<pre><code>if (depth == 1)\n{\n    Canvas.SetTop(g1, 163);\n}\nelse if (depth == 2)\n{\n    Canvas.SetTop(g1, 108);\n}\nelse if (depth == 3)\n{\n    Canvas.SetTop(g1, 81);\n}\nelse if (depth == 4)\n{\n    Canvas.SetTop(g1, 65);\n}\nelse if (depth == 5)\n{\n    Canvas.SetTop(g1, 54);\n}\nelse if (depth == 6)\n{\n    Canvas.SetTop(g1, 46);\n}\n</code></pre>\n\n<p>Could be better implemented using an array...</p>\n\n<pre><code>int[] values = new [] { 0, 163, 108, 81, 65, 54, 46  }\n</code></pre>\n\n<p>Or Dictionary...</p>\n\n<pre><code>var values = new Dictionary&lt;int,int&gt;() { { 1, 163 }, { 2, 108 }, { 3, 81 }, { 4, 65 }, { 5, 54 }, { 6, 46} };\n</code></pre>\n\n<p>This way you could simple say</p>\n\n<pre><code>Canvas.SetTop(g1, values[depth])\n</code></pre>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-20T00:42:45.400",
+                        "Id": "69",
+                        "Score": "3",
+                        "body": "alternatively, a switch statement would help and introduce absolutely no overhead (in fact, it's faster than repeated `if/else` operations)"
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-20T02:18:44.180",
+                        "Id": "78",
+                        "Score": "16",
+                        "body": "@Felix: But a switch statement wouldn't really make the code shorter."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-20T22:03:07.877",
+                        "Id": "167",
+                        "Score": "4",
+                        "body": "There seem to be some prejudices towards using a control statement exactly for what it was made. I embrace brevity, but if this is in its own method it will be readable again, and if performance makes a difference, I would strongly prefer the switch statement"
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-20T23:59:50.233",
+                        "Id": "171",
+                        "Score": "2",
+                        "body": "Don't forget The question says it should be done not just for 6 but for n iterations. There's no such thing as a dynamic-n-cases-switch. But I do agree that portion of code should be in it own method"
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-21T09:19:19.733",
+                        "Id": "179",
+                        "Score": "0",
+                        "body": "I'm not sure if replacing the else ifs with this is any more readable and if the code would would perform better.."
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-21T14:36:58.320",
+                        "Id": "187",
+                        "Score": "0",
+                        "body": "Mmmm let's see. How would you implement this mathematical function: f(x) = 3x . This way: F(int x) { return 3 * x } Or this way: F(int x) { if ( x == 1 ) return 3; if (x == 2) return 6; if (x == 3) return 9; ..... } or maybe this way: F(int x) { switch (x) { case 1: return 3; case 2: return 6; case 3 return 9; ..... } }"
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-21T15:36:19.860",
+                        "Id": "197",
+                        "Score": "1",
+                        "body": "@Carlos right -- what we need is a formula to spit out a number for any *n*. I can't think of the right one just now, but it probably has do something with log2"
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "7",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-19T22:34:52.687",
+                    "Id": "29",
+                    "ParentId": "9",
+                    "Score": "59"
+                }
+            },
+            {
+                "body": "<p>Break your code into its own methods definitely, there are other ways, but that will probably be the easiest and less time consuming way to make it easier read and debug down the track for a start.</p>\n",
+                "comments": [],
+                "meta_data": {
+                    "CommentCount": "0",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-20T00:18:27.980",
+                    "Id": "46",
+                    "ParentId": "9",
+                    "Score": "3"
+                }
+            },
+            {
+                "body": "<p>There are a couple of immediately obvious things that havent been mentioned yet:</p>\n\n<p>You have a lot of magic numbers in your code. Try to define them as <code>const</code>s with meaningful names.</p>\n\n<p>For example </p>\n\n<p><code>g.Width = 50;</code></p>\n\n<p>becomes</p>\n\n<pre><code>private const int DefaultGridWidth = 50;\n...\ng.Width = DefaultGridWidth;\n</code></pre>\n\n<p>It seems like a trivial change but it makes a big difference to someone who is reading your code. It gives an indication of <strong>why</strong> the value is 50, not just that it <strong>is</strong> 50.\n<hr>\nYou should use more meaningful names for your identifiers. Names like <code>g</code> and <code>g1</code> do not tell me a lot about what the object is, but <code>mainGrid</code> and <code>innerGrid</code> contain more information for the reader.</p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-20T22:05:40.760",
+                        "Id": "168",
+                        "Score": "0",
+                        "body": "That is indeed true, too many literals in code make it harder to maintain and adapt, especially so if there are cross-dependencies among the values!"
+                    },
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-03-23T07:47:00.157",
+                        "Id": "2434",
+                        "Score": "1",
+                        "body": "He should use static readonly instead of const - then he won't have to recompile assemblies that depend on his code with every change! Also, he's not limited to only values but can use references as constants as well."
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "2",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-20T10:33:10.783",
+                    "Id": "84",
+                    "ParentId": "9",
+                    "Score": "29"
+                }
+            },
+            {
+                "body": "<p>This should simplify the looping assuming that you can generalize the positioning code like mention in several of the other answers</p>\n\n<pre><code>        //Get the initial set of sourcefiles\n        var sourceFiles = from file in list\n              from invocation in file.getInvocations()\n              group invocation by (SourceFile)null into groupedByInvoker\n              select groupedByInvoker;\n\n        for (var currentDepth = 0; currentDepth &lt;= depth; currentDepth++)\n        {\n            foreach (var currentGroup in sourceFiles)\n            {\n                int sourceFileCount = currentGroup.Count();\n                int counter = 0;\n\n                foreach (var invocation in currentGroup)\n                {\n                    /*\n                     * Generalized grid code goes here\n                     */\n                    counter++;\n                }\n            }\n\n            //Select the current sub source files\n         sourceFiles = from invokerGroup in sourceFiles\n              from file in invokerGroup\n              from invocation in file.getInvocations()\n              group invocation by file into groupedByInvoker\n              select groupedByInvoker;\n\n        }\n</code></pre>\n\n<p>This is not an exact mapping to the above code in that this goes over the getInvocations tree breadth first instead of depth first.</p>\n\n<p>Updated with imput from <a href=\"https://codereview.stackexchange.com/questions/182/is-this-linq-code-clear-enough-and-how-could-i-improve-it/329#329\">Update grid from source hierarchy</a></p>\n",
+                "comments": [],
+                "meta_data": {
+                    "CommentCount": "0",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-20T21:43:51.547",
+                    "Id": "117",
+                    "ParentId": "9",
+                    "Score": "7"
+                }
+            },
+            {
+                "body": "<p>Since you're using C#, you can make your initializers a bit nicer:</p>\n\n<pre><code>Grid g = new Grid()\n{\n    Width = 50,\n    Height = 50,\n    Tag = focus,\n}\n//Canvas.SetZIndex(g, 100);\n</code></pre>\n\n<p>The last part of your code (or rather, the second half) does very similar things multiple times: code duplication is a sign your code can be made clearer. For instance (note that your code almost surely contains a bug! The statement inside all the loops invokes s2 and not s3):</p>\n\n<pre><code>foreach (SourceFile s in list)\n{\n    foreach (SourceFile source in s.getInvocations())\n    {\n        foreach (SourceFile s1 in source.getInvocations())\n        {\n            foreach (SourceFile s2 in s1.getInvocations())\n            {\n                foreach (SourceFile s3 in s2.getInvocations())\n                {\n                    invoCount = invoCount + s2.getInvocations().Count;\n                }\n            }\n        }\n    }\n}\n</code></pre>\n\n<p>can be changed into</p>\n\n<pre><code>list.CountRecursive(t =&gt; t.getInvocations(), t =&gt; t.getInvocations().Count, 5);\n\n(...)\n\npublic static int CountRecursive&lt;T&gt;(this IEnumerable&lt;T&gt; x, Func&lt;T, IEnumerable&lt;T&gt;&gt; f, Func&lt;T, int&gt; c, int depth)\n{\n    int counter = 0;\n    foreach (T t in x)\n    {\n        if (depth &gt; 1)\n        {\n            counter += f(t).CountRecursive(f, c, depth - 1);\n        }\n        else\n        {\n            counter += c(t);\n        }\n    }\n    return counter;\n}\n</code></pre>\n\n<p>which also makes it a lot easier to do it for different recursion levels.</p>\n",
+                "comments": [],
+                "meta_data": {
+                    "CommentCount": "0",
+                    "ContentLicense": "CC BY-SA 3.0",
+                    "CreationDate": "2011-01-21T00:30:18.750",
+                    "Id": "122",
+                    "ParentId": "9",
+                    "Score": "18"
+                }
+            },
+            {
+                "body": "<p>I refactored it for you. I did all of this without testing, so there's likely a bunch of bugs and off-by-one errors. I also made some assumptions about the code that you didn't include. Now that the code's a lot smaller, it should be easier for you to find those bugs.</p>\n\n<p>A couple of important points:</p>\n\n<ol>\n<li><p>Recursion is a fundamental concept in programming. If you are a professional programmer, you absolutely must be comfortable with it, or you will never be able to deal with nested structures effectively.</p></li>\n<li><p>If you copy and paste, you're doing it wrong. Every time you hit Ctrl+C, a kitten dies. No no no.</p></li>\n<li><p>If you have variables named <code>something1</code>, <code>something2</code>, <code>something3</code>, etc. <em>you're doing it wrong</em>. At the very least, those should be an array.</p></li>\n<li><p>You had <code>depth</code> as a <code>double</code> but were comparing it to literal values other than zero. That's bad.</p></li>\n</ol>\n\n<p>Here you go:</p>\n\n<pre><code>private void update(int depth)\n{\n    Console.WriteLine(\"update with level \" + depth);\n\n    Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(delegate()\n    {\n        List&lt;Grid&gt; grids = new List&lt;Grid&gt;();\n\n        Dependencies.Children.Clear();\n\n        Grid grid = MakeOuterGrid(grids, focus, e.Width, e.Height, depth);\n\n        List&lt;SourceFile&gt; list = focus.getInvocations();\n\n        for (int i = 1; i &lt;= depth; i++)\n        {\n            int invocCount = CountInvocations(focus, i + 1);\n            int counter = 0;\n            MakeRecursiveGrids(grids, null, focus, i, invocCount, i, ref counter);\n        }\n\n        foreach (Grid grid in grids)\n        {\n            Dependencies.Children.Add(grid);\n            Contacts.AddPreviewContactDownHandler(grid, DownOnSourceFile);\n        }\n    }));\n}\n\nvoid AdjustTop(int depth, int table) {\n    int[][] depthTable = new int[][] {\n        new int[] { 163, 108,  81,  65,  54,  46 },\n        new int[] { 488, 324, 244, 195, 163, 139 },\n        new int[] {  -1, 540, 406, 325, 271, 232 },\n        new int[] {  -1,  -1, 569, 455, 379, 325 },\n        new int[] {  -1,  -1,  -1, 585, 488, 418 },\n        new int[] {  -1,  -1,  -1,  -1, 596, 511 },\n    }\n\n    int[] depths = depthTable[table];\n    if ((depth &lt; depths.Length) &amp;&amp; (depths[depth - 1] != -1)) {\n        Canvas.SetTop(depths[depth - 1]);\n    }\n}\n\nSizeChangedEventHandler UpdateBindings(Line line) {\n    SizeChangedEventHandler act = (Object o, SizeChangedEventArgs args) =&gt;\n    {\n        BindingOperations.GetBindingExpressionBase(line, Line.X1Property).UpdateTarget();\n        BindingOperations.GetBindingExpressionBase(line, Line.Y1Property).UpdateTarget();\n        BindingOperations.GetBindingExpressionBase(line, Line.X2Property).UpdateTarget();\n        BindingOperations.GetBindingExpressionBase(line, Line.Y2Property).UpdateTarget();\n    };\n\n    return act;\n}\n\nint CountInvocations(SourceFile source, int depth)\n{\n    int count = 0;\n\n    if (depth &gt; 0)\n    {\n        foreach (SourceFile inner in source.getInvocations())\n        {\n            count = count + CountInvocations(inner, depth - 1);\n        }\n    }\n    else\n    {\n        count = source.Count;\n    }\n\n    return count;\n}\n\nGrid MakeGrid(List&lt;Grid&gt; grids, SourceFile source)\n{\n    Grid grid = new Grid();\n    grid.Width = 50;\n    grid.Height = 50;\n    grid.Tag = source;\n    source.setGrid(grid);\n    grids.Add(grid);\n\n    Ellipse ellipse = new Ellipse();\n    ellipse.Width = 50;\n    ellipse.Height = 50;\n    ellipse.Fill = Brushes.Red;\n\n    grid.Children.Add(ellipse);\n\n    return grids;\n}\n\nvoid MakeRecursiveGrids(List&lt;Grid&gt; grids, SourceFile outer, SourceFile source,\n    int maxDepth, int invocCount, int recurseDepth, ref int counter)\n{\n    if (recurseDepth &gt; 0)\n    {\n        foreach (SourceFile inner in source)\n        {\n            MakeRecursiveGrids(grids, source, inner, maxDepth, invocCount,\n                recurseDepth - 1, ref counter);\n        }\n    }\n    else\n    {\n        MakeGrid(grids, outer, inner, depth, maxDepth, invocCount, counter);\n        counter++;\n    }\n}\n\nGrid MakeGrid(List&lt;Grid&gt; grids, SourceFile outer, SourceFile inner,\n    int depth, int[] depths, int invocCount, int counter)\n{\n    Grid grid = MakeGrid(grids, inner);\n\n    MakeViewbox(grid, grid.Width, grid.Height, inner.getName());\n\n    AdjustTop(depth, depths);\n    Canvas.SetLeft(grid, counter * (1000 / (invocCount + 1)));\n\n    MakeLine(grids, grid, outer, inner);\n\n    return grid;\n}\n\nGrid MakeOuterGrid(List&lt;Grid&gt; grids, SourceFile inner, int width, int height,\n    int depth)\n{\n    Grid grid = MakeGrid(grids, inner);\n\n    MakeViewbox(grid, width, height, inner.getName());\n\n    AdjustTop(depth, 0);\n    Canvas.SetLeft(grid, 500);\n\n    return grid;\n}\n\nBinding MakeBinding(Object parameter, Grid grid)\n{\n    Binding binding = new Binding();\n    binding.Path = new PropertyPath(parameter);\n    binding.Converter = new MyConverter();\n    binding.ConverterParameter = grid;\n}\n\nvoid MakeLine(List&lt;Grid&gt; grids, Grid grid, SourceFile outer, SourceFile inner)\n{\n    Grid g2 = outer.getGrid();\n\n    Line line = new Line();\n    line.Stroke = Brushes.Green;\n    line.StrokeThickness = 10;\n\n    Binding x1 = MakeBinding(Canvas.LeftProperty, g2);\n    Binding y1 = MakeBinding(Canvas.TopProperty, g2);\n    Binding x2 = MakeBinding(Canvas.LeftProperty, grid);\n    Binding y2 = MakeBinding(Canvas.TopProperty, grid);\n\n    Grid g = findGrid(grids, outer, inner);\n    x1.Source = g;\n    y1.Source = g;\n    x2.Source = grid;\n    y2.Source = grid;\n\n    line.SetBinding(Line.X1Property, x1);\n    line.SetBinding(Line.Y1Property, y1);\n    line.SetBinding(Line.X2Property, x2);\n    line.SetBinding(Line.Y2Property, y2);\n\n    Dependencies.Children.Add(line);\n\n    Contacts.AddPreviewContactDownHandler(line, OnLineDown);\n\n    line.Tag = new Call(outer, inner);\n\n    SizeChangedEventHandler act = UpdateBindings(line);\n    inner.getGrid().SizeChanged += act;\n    g1.SizeChanged += act;\n}\n\nvoid MakeViewBox(Grid grid, int width, int height, string text)\n{\n    Viewbox box = new Viewbox();\n    box.Width = width;\n    box.Height = height;\n\n    TextBox textBox = new TextBox();\n    textBox.Text = text;\n\n    box.Child = textBox;\n\n    grid.Children.Add(box);\n}\n</code></pre>\n",
+                "comments": [],
+                "meta_data": {
+                    "CommentCount": "0",
+                    "ContentLicense": "CC BY-SA 2.5",
+                    "CreationDate": "2011-01-27T19:12:58.543",
+                    "Id": "315",
+                    "ParentId": "9",
+                    "Score": "8"
+                }
+            },
+            {
+                "body": "<p>Instead of <code>Grid g</code> and <code>Ellipse e</code>, use <code>Grid grid</code> and <code>Ellipse ellipse</code>. A loc with <code>e.size=</code> says less than <code>ellipse.Size=</code>.</p>\n",
+                "comments": [
+                    {
+                        "ContentLicense": "CC BY-SA 2.5",
+                        "CreationDate": "2011-01-27T21:47:30.027",
+                        "Id": "523",
+                        "Score": "0",
+                        "body": "You're absoluletly right, but I don't think that this is the real problem here ;)"
+                    }
+                ],
+                "meta_data": {
+                    "CommentCount": "1",
+                    "ContentLicense": "CC BY-SA 3.0",
+                    "CreationDate": "2011-01-27T19:44:05.510",
+                    "Id": "320",
+                    "ParentId": "9",
+                    "Score": "4"
+                }
+            }
+        ],
+        "body": "<p>I have a method that has a lot of loops:</p>\n\n<pre><code>private void update(double depth)\n        {\n\n            Console.WriteLine(\"update with level \" + depth);\n\n            this.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, new Action(delegate()\n                {\n\n\n            List&lt;Grid&gt; grids = new List&lt;Grid&gt;();\n\n            Dependencies.Children.Clear();\n\n            Grid g = new Grid();\n            //Canvas.SetZIndex(g, 100);\n            g.Width = 50;\n            g.Height = 50;\n            g.Tag = focus;\n\n            Ellipse e = new Ellipse();\n            e.Width = 50;\n            e.Height = 50;\n            e.Fill = Brushes.Red;\n            if (depth == 1)\n            {\n                Canvas.SetTop(g, 163);\n            }\n            else if (depth == 2)\n            {\n                Canvas.SetTop(g, 108);\n            }\n            else if (depth == 3)\n            {\n                Canvas.SetTop(g, 81);\n            }\n            else if (depth == 4)\n            {\n                Canvas.SetTop(g, 65);\n            }\n            else if (depth == 5)\n            {\n                Canvas.SetTop(g, 54);\n            }\n            else if (depth == 6)\n            {\n                Canvas.SetTop(g, 46);\n            }\n            Canvas.SetLeft(g, 500);\n\n            g.Children.Add(e);\n\n            Viewbox box = new Viewbox();\n            box.Width = e.Width;\n            box.Height = e.Height;\n\n\n            TextBox txt = new TextBox();\n            txt.Text = focus.getName();\n            box.Child = txt;\n            txt.Background = Brushes.Transparent;\n            txt.BorderBrush = Brushes.Transparent;\n\n            g.Children.Add(box);\n\n\n\n            grids.Add(g);\n\n            List&lt;SourceFile&gt; list = new List&lt;SourceFile&gt;();\n\n            list = focus.getInvocations();\n\n            int counter = 1;\n            foreach (SourceFile sf in list)\n            {\n                Grid g1 = new Grid();\n                //Canvas.SetZIndex(g, 101);\n                g1.Width = 50;\n                g1.Height = 50;\n                g1.Tag = sf;\n\n                Ellipse e1 = new Ellipse();\n                //Dependencies.Children.Add(e1);\n                sf.setGrid(g1);\n                e1.Width = 50;\n                e1.Height = 50;\n                e1.Fill = Brushes.Red;\n\n                g1.Children.Add(e1);\n\n                if (depth == 1)\n                {\n                    Canvas.SetTop(g1, 488);\n                }\n                else if (depth == 2)\n                {\n                    Canvas.SetTop(g1, 324);\n                }\n                else if (depth == 3)\n                {\n                    Canvas.SetTop(g1, 244);\n                }\n                else if (depth == 4)\n                {\n                    Canvas.SetTop(g1, 195);\n                }\n                else if (depth == 5)\n                {\n                    Canvas.SetTop(g1, 163);\n                }\n                else if (depth == 6)\n                {\n                    Canvas.SetTop(g1, 139);\n                }\n                Canvas.SetLeft(g1, counter * (1000 / (list.Count + 1) ));\n\n                Viewbox box1 = new Viewbox();\n                box1.Width = g1.Width;\n                box1.Height = g1.Height;\n\n                TextBox txt1 = new TextBox();\n                txt1.Text = sf.getName();\n                txt1.Background = Brushes.Transparent;\n                txt1.BorderBrush = Brushes.Transparent;\n\n                box1.Child = txt1;\n                g1.Children.Add(box1);\n\n                Line l = new Line();\n                //Canvas.SetZIndex(l, 1);\n                l.Stroke = Brushes.Green;\n                l.StrokeThickness = 10;\n                Binding x1 = new Binding(); x1.Path = new PropertyPath(Canvas.LeftProperty);\n                x1.Converter = new MyConverter();\n                x1.ConverterParameter = g;\n                Binding y1 = new Binding(); y1.Path = new PropertyPath(Canvas.TopProperty);\n                y1.Converter = new MyConverter();\n                y1.ConverterParameter = g;\n                Binding x2 = new Binding(); x2.Path = new PropertyPath(Canvas.LeftProperty);\n                x2.Converter = new MyConverter();\n                x2.ConverterParameter = g1;\n                Binding y2 = new Binding(); y2.Path = new PropertyPath(Canvas.TopProperty);\n                y2.Converter = new MyConverter();\n                y2.ConverterParameter = g1;\n                x1.Source = y1.Source = g;\n                x2.Source = y2.Source = g1;\n                l.SetBinding(Line.X1Property, x1);\n                l.SetBinding(Line.Y1Property, y1);\n                l.SetBinding(Line.X2Property, x2);\n                l.SetBinding(Line.Y2Property, y2);\n                Dependencies.Children.Add(l);\n                l.Tag = new Call(focus, sf);\n                Contacts.AddPreviewContactDownHandler(l, OnLineDown);\n                counter++;\n\n                grids.Add(g1);\n\n                SizeChangedEventHandler act = (Object s, SizeChangedEventArgs args) =&gt;\n                {\n                    BindingOperations.GetBindingExpressionBase(l, Line.X1Property).UpdateTarget();\n                    BindingOperations.GetBindingExpressionBase(l, Line.Y1Property).UpdateTarget();\n                    BindingOperations.GetBindingExpressionBase(l, Line.X2Property).UpdateTarget();\n                    BindingOperations.GetBindingExpressionBase(l, Line.Y2Property).UpdateTarget();\n                };\n\n                g.SizeChanged += act;\n                g1.SizeChanged += act;\n            }\n\n\n            int counter2 = 1;\n            if (depth &gt;= 2)\n            {\n\n                int invocCount = 0;\n\n                foreach (SourceFile s in list)\n                {\n                    foreach (SourceFile source in s.getInvocations())\n                    {\n                        invocCount = invocCount + s.getInvocations().Count;\n                    }\n                }\n\n                Console.WriteLine(invocCount);\n\n                foreach (SourceFile s in list)\n                {\n                    foreach (SourceFile source in s.getInvocations())\n                    {\n\n                        Console.WriteLine(\"`Found invocation of \" + s.getName() + \": \" + source.getName());\n\n                        Grid g1 = new Grid();\n                        g1.Width = 50;\n                        g1.Height = 50;\n\n                        Ellipse e1 = new Ellipse();\n                       // Canvas.SetZIndex(g1, 102);\n                        grids.Add(g1);\n                        e1.Width = 50;\n                        e1.Height = 50;\n                        e1.Fill = Brushes.Red;\n                        source.setGrid(g1);\n                        g1.Tag = source;\n\n                        g1.Children.Add(e1);\n\n                        if (depth == 2)\n                        {\n                            Canvas.SetTop(g1, 540);\n                        }\n                        else if (depth == 3)\n                        {\n                            Canvas.SetTop(g1, 406);\n                        }\n                        else if (depth == 4)\n                        {\n                            Canvas.SetTop(g1, 325);\n                        }\n                        else if (depth == 5)\n                        {\n                            Canvas.SetTop(g1, 271);\n                        }\n                        else if (depth == 6)\n                        {\n                            Canvas.SetTop(g1, 232);\n                        }\n\n                        Canvas.SetLeft(g1, counter2 * (1000 / (invocCount + 1)));\n\n                        Viewbox box1 = new Viewbox();\n                        box1.Width = g1.Width;\n                        box1.Height = g1.Height;\n\n                        TextBox txt1 = new TextBox();\n                        txt1.Text = source.getName();\n                        txt1.Background = Brushes.Transparent;\n                        txt1.BorderBrush = Brushes.Transparent;\n\n                        box1.Child = txt1;\n                        g1.Children.Add(box1);\n\n                        Line l = new Line();\n                        //Canvas.SetZIndex(l, 2);\n                        l.Stroke = Brushes.Green;\n                        l.StrokeThickness = 10;\n                        Binding x1 = new Binding(); x1.Path = new PropertyPath(Canvas.LeftProperty);\n                        x1.Converter = new MyConverter();\n                        x1.ConverterParameter = s.getGrid();\n                        Binding y1 = new Binding(); y1.Path = new PropertyPath(Canvas.TopProperty);\n                        y1.Converter = new MyConverter();\n                        y1.ConverterParameter = s.getGrid();\n                        Binding x2 = new Binding(); x2.Path = new PropertyPath(Canvas.LeftProperty);\n                        x2.Converter = new MyConverter();\n                        x2.ConverterParameter = g1;\n                        Binding y2 = new Binding(); y2.Path = new PropertyPath(Canvas.TopProperty);\n                        y2.Converter = new MyConverter();\n                        y2.ConverterParameter = g1;\n                        x1.Source = y1.Source = findGrid(grids, s, source);\n                        x2.Source = y2.Source = g1;\n                        l.SetBinding(Line.X1Property, x1);\n                        l.SetBinding(Line.Y1Property, y1);\n                        l.SetBinding(Line.X2Property, x2);\n                        l.SetBinding(Line.Y2Property, y2);\n                        Dependencies.Children.Add(l);\n                        l.Tag = new Call(s, source);\n                        Contacts.AddPreviewContactDownHandler(l, OnLineDown);\n\n                        counter2++;\n\n                        SizeChangedEventHandler act = (Object o, SizeChangedEventArgs args) =&gt;\n                        {\n                            BindingOperations.GetBindingExpressionBase(l, Line.X1Property).UpdateTarget();\n                            BindingOperations.GetBindingExpressionBase(l, Line.Y1Property).UpdateTarget();\n                            BindingOperations.GetBindingExpressionBase(l, Line.X2Property).UpdateTarget();\n                            BindingOperations.GetBindingExpressionBase(l, Line.Y2Property).UpdateTarget();\n                        };\n\n                        source.getGrid().SizeChanged += act;\n                        g1.SizeChanged += act;\n                    }\n                }\n            }\n\n\n            int counter3 = 1;\n            if (depth &gt;= 3)\n            {\n\n                int invocCount = 0;\n\n                foreach (SourceFile s in list)\n                {\n                    foreach (SourceFile source in s.getInvocations())\n                    {\n                        foreach (SourceFile s1 in source.getInvocations())\n                        {\n                            invocCount = invocCount + source.getInvocations().Count;\n                        }\n                    }\n                }\n\n                foreach (SourceFile s in list)\n                {\n                    foreach (SourceFile source in s.getInvocations())\n                    {\n                        foreach (SourceFile s1 in source.getInvocations())\n                        {\n                            Grid g1 = new Grid();\n                            grids.Add(g1);\n                            g1.Width = 50;\n                            g1.Height = 50;\n                            g1.Tag = s1;\n                            Ellipse e1 = new Ellipse();\n\n                            e1.Width = 50;\n                            e1.Height = 50;\n                            e1.Fill = Brushes.Red;\n                            s1.setGrid(g1);\n                            g1.Children.Add(e1);\n\n                            if (depth == 3)\n                            {\n                                Canvas.SetTop(g1, 569);\n                            }\n                            else if (depth == 4)\n                            {\n                                Canvas.SetTop(g1, 455);\n                            }\n                            else if (depth == 5)\n                            {\n                                Canvas.SetTop(g1, 379);\n                            }\n                            else if (depth == 6)\n                            {\n                                Canvas.SetTop(g1, 325);\n                            }\n                            Canvas.SetLeft(g1, counter3 * (1000 / (invocCount + 1)));\n\n                            Viewbox box1 = new Viewbox();\n                            box1.Width = g1.Width;\n                            box1.Height = g1.Height;\n\n                            TextBox txt1 = new TextBox();\n                            txt1.Background = Brushes.Transparent;\n                            txt1.BorderBrush = Brushes.Transparent;\n                            txt1.Text = s1.getName();\n                            box1.Child = txt1;\n                            g1.Children.Add(box1);\n\n                            Line l = new Line();\n                            //Canvas.SetZIndex(l, 2);\n                            l.Stroke = Brushes.Green;\n                            l.StrokeThickness = 10;\n                            Binding x1 = new Binding(); x1.Path = new PropertyPath(Canvas.LeftProperty);\n                            x1.Converter = new MyConverter();\n                            x1.ConverterParameter = source.getGrid();\n                            Binding y1 = new Binding(); y1.Path = new PropertyPath(Canvas.TopProperty);\n                            y1.Converter = new MyConverter();\n                            y1.ConverterParameter = source.getGrid();\n                            Binding x2 = new Binding(); x2.Path = new PropertyPath(Canvas.LeftProperty);\n                            x2.Converter = new MyConverter();\n                            x2.ConverterParameter = g1;\n                            Binding y2 = new Binding(); y2.Path = new PropertyPath(Canvas.TopProperty);\n                            y2.Converter = new MyConverter();\n                            y2.ConverterParameter = g1;\n                            x1.Source = y1.Source = findGrid(grids, source, s1);\n                            x2.Source = y2.Source = g1;\n                            l.SetBinding(Line.X1Property, x1);\n                            l.SetBinding(Line.Y1Property, y1);\n                            l.SetBinding(Line.X2Property, x2);\n                            l.SetBinding(Line.Y2Property, y2);\n                            Dependencies.Children.Add(l);\n                            l.Tag = new Call(source, s1);\n                            Contacts.AddPreviewContactDownHandler(l, OnLineDown);\n\n                            counter3++;\n\n                            SizeChangedEventHandler act = (Object o, SizeChangedEventArgs args) =&gt;\n                            {\n                                BindingOperations.GetBindingExpressionBase(l, Line.X1Property).UpdateTarget();\n                                BindingOperations.GetBindingExpressionBase(l, Line.Y1Property).UpdateTarget();\n                                BindingOperations.GetBindingExpressionBase(l, Line.X2Property).UpdateTarget();\n                                BindingOperations.GetBindingExpressionBase(l, Line.Y2Property).UpdateTarget();\n                            };\n\n                            s1.getGrid().SizeChanged += act;\n                            g1.SizeChanged += act;\n                        }\n                    }\n                }\n            }\n\n\n         int counter4 = 1;\n         if (depth &gt;= 4)\n         {\n\n             int invoCount = 0;\n             foreach (SourceFile s in list)\n             {\n                 foreach (SourceFile source in s.getInvocations())\n                 {\n                     foreach (SourceFile s1 in source.getInvocations())\n                     {\n                         foreach (SourceFile s2 in s1.getInvocations())\n                         {\n                             invoCount = invoCount + s1.getInvocations().Count;\n                         }\n                     }\n                 }\n             }\n\n             foreach (SourceFile s in list)\n             {\n                 foreach (SourceFile source in s.getInvocations())\n                 {\n                     foreach (SourceFile s1 in source.getInvocations())\n                     {\n                         foreach (SourceFile s2 in s1.getInvocations())\n                         {\n\n                             Grid g1 = new Grid();\n                             grids.Add(g1);\n                             g1.Width = 50;\n                             g1.Height = 50;\n                             g1.Tag = s2;\n                             Ellipse e1 = new Ellipse();\n\n                             e1.Width = 50;\n                             e1.Height = 50;\n                             e1.Fill = Brushes.Red;\n                             s2.setGrid(g1);\n\n                             g1.Children.Add(e1);\n\n                             if (depth == 4)\n                             {\n                                 Canvas.SetTop(g1, 585);\n                             }\n                             else if (depth == 5)\n                             {\n                                 Canvas.SetTop(g1, 488);\n                             }\n                             else if (depth == 6)\n                             {\n                                 Canvas.SetTop(g1, 418);\n                             }\n                             Canvas.SetLeft(g1, counter4 * (1000 / (invoCount + 1)));\n\n                             Viewbox box1 = new Viewbox();\n                             box1.Width = g1.Width;\n                             box1.Height = g1.Height;\n\n                             TextBox txt1 = new TextBox();\n                             txt1.Background = Brushes.Transparent;\n                             txt1.BorderBrush = Brushes.Transparent;\n                             txt1.Text = s2.getName();\n                             box1.Child = txt1;\n                             g1.Children.Add(box1);\n\n                             Line l = new Line();\n                             //Canvas.SetZIndex(l, 2);\n                             l.Stroke = Brushes.Green;\n                             l.StrokeThickness = 10;\n                             Binding x1 = new Binding(); x1.Path = new PropertyPath(Canvas.LeftProperty);\n                             x1.Converter = new MyConverter();\n                             x1.ConverterParameter = s1.getGrid();\n                             Binding y1 = new Binding(); y1.Path = new PropertyPath(Canvas.TopProperty);\n                             y1.Converter = new MyConverter();\n                             y1.ConverterParameter = s1.getGrid();\n                             Binding x2 = new Binding(); x2.Path = new PropertyPath(Canvas.LeftProperty);\n                             x2.Converter = new MyConverter();\n                             x2.ConverterParameter = g1;\n                             Binding y2 = new Binding(); y2.Path = new PropertyPath(Canvas.TopProperty);\n                             y2.Converter = new MyConverter();\n                             y2.ConverterParameter = g1;\n                             x1.Source = y1.Source = findGrid(grids, s1, s2);\n                             x2.Source = y2.Source = g1;\n                             l.SetBinding(Line.X1Property, x1);\n                             l.SetBinding(Line.Y1Property, y1);\n                             l.SetBinding(Line.X2Property, x2);\n                             l.SetBinding(Line.Y2Property, y2);\n                             Dependencies.Children.Add(l);\n                             l.Tag = new Call(s1, s2);\n                             Contacts.AddPreviewContactDownHandler(l, OnLineDown);\n                             counter4++;\n\n                             SizeChangedEventHandler act = (Object o, SizeChangedEventArgs args) =&gt;\n                             {\n                                 BindingOperations.GetBindingExpressionBase(l, Line.X1Property).UpdateTarget();\n                                 BindingOperations.GetBindingExpressionBase(l, Line.Y1Property).UpdateTarget();\n                                 BindingOperations.GetBindingExpressionBase(l, Line.X2Property).UpdateTarget();\n                                 BindingOperations.GetBindingExpressionBase(l, Line.Y2Property).UpdateTarget();\n                             };\n\n                             s2.getGrid().SizeChanged += act;\n                             g1.SizeChanged += act;\n                         }\n                     }\n                 }\n             }\n         }\n\n\n\n      int counter5 = 1;\n      if (depth &gt;= 5)\n      {\n\n          int invoCount = 0;\n\n          foreach (SourceFile s in list)\n          {\n              foreach (SourceFile source in s.getInvocations())\n              {\n                  foreach (SourceFile s1 in source.getInvocations())\n                  {\n                      foreach (SourceFile s2 in s1.getInvocations())\n                      {\n                          foreach (SourceFile s3 in s2.getInvocations())\n                          {\n                              invoCount = invoCount + s2.getInvocations().Count;\n                          }\n                      }\n                  }\n              }\n          }\n\n          foreach (SourceFile s in list)\n          {\n              foreach (SourceFile source in s.getInvocations())\n              {\n                  foreach (SourceFile s1 in source.getInvocations())\n                  {\n                      foreach (SourceFile s2 in s1.getInvocations())\n                      {\n                          foreach (SourceFile s3 in s2.getInvocations())\n                          {\n                              Grid g1 = new Grid();\n                              g1.Width = 50;\n                              g1.Height = 50;\n                              grids.Add(g1);\n                              g1.Tag = s3;\n                              Ellipse e1 = new Ellipse();\n                              //Dependencies.Children.Add(e1);\n                              e1.Width = 50;\n                              e1.Height = 50;\n                              e1.Fill = Brushes.Red;\n                              s3.setGrid(g1);\n\n                              g1.Children.Add(e1);\n\n                              if (depth == 5)\n                              {\n                                  Canvas.SetTop(g1, 596);\n                              }\n                              else if (depth == 6)\n                              {\n                                  Canvas.SetTop(g1, 511);\n                              }\n                              Canvas.SetLeft(g1, counter5 * (1000 / (invoCount + 1)));\n\n                              Viewbox box1 = new Viewbox();\n                              box1.Width = g1.Width;\n                              box1.Height = g1.Height;\n\n                              TextBox txt1 = new TextBox();\n                              txt1.Background = Brushes.Transparent;\n                              txt1.BorderBrush = Brushes.Transparent;\n                              txt1.Text = s3.getName();\n                              box1.Child = txt1;\n                              g1.Children.Add(box1);\n\n                              Line l = new Line();\n                              //Canvas.SetZIndex(l, 2);\n                              l.Stroke = Brushes.Green;\n                              l.StrokeThickness = 10;\n                              Binding x1 = new Binding(); x1.Path = new PropertyPath(Canvas.LeftProperty);\n                              x1.Converter = new MyConverter();\n                              x1.ConverterParameter = s2.getGrid();\n                              Binding y1 = new Binding(); y1.Path = new PropertyPath(Canvas.TopProperty);\n                              y1.Converter = new MyConverter();\n                              y1.ConverterParameter = s2.getGrid();\n                              Binding x2 = new Binding(); x2.Path = new PropertyPath(Canvas.LeftProperty);\n                              x2.Converter = new MyConverter();\n                              x2.ConverterParameter = g1;\n                              Binding y2 = new Binding(); y2.Path = new PropertyPath(Canvas.TopProperty);\n                              y2.Converter = new MyConverter();\n                              y2.ConverterParameter = g1;\n                              x1.Source = y1.Source = findGrid(grids, s2, s3);\n                              x2.Source = y2.Source = g1;\n                              l.SetBinding(Line.X1Property, x1);\n                              l.SetBinding(Line.Y1Property, y1);\n                              l.SetBinding(Line.X2Property, x2);\n                              l.SetBinding(Line.Y2Property, y2);\n                              l.Tag = new Call(s2, s3);\n                              Contacts.AddPreviewContactDownHandler(l, OnLineDown);\n                              Dependencies.Children.Add(l);\n\n                              counter5++;\n\n                              SizeChangedEventHandler act = (Object o, SizeChangedEventArgs args) =&gt;\n                              {\n                                  BindingOperations.GetBindingExpressionBase(l, Line.X1Property).UpdateTarget();\n                                  BindingOperations.GetBindingExpressionBase(l, Line.Y1Property).UpdateTarget();\n                                  BindingOperations.GetBindingExpressionBase(l, Line.X2Property).UpdateTarget();\n                                  BindingOperations.GetBindingExpressionBase(l, Line.Y2Property).UpdateTarget();\n                              };\n\n                              s3.getGrid().SizeChanged += act;\n                              g1.SizeChanged += act;\n                          }\n                      }\n                  }\n              }\n          }\n      }\n\n\n\n            foreach (Grid grid in grids)\n            {\n                Dependencies.Children.Add(grid);\n                Contacts.AddPreviewContactDownHandler(grid, DownOnSourceFile);\n            }\n                }\n  ));\n        }\n</code></pre>\n\n<p>Is there any easy way to improve that? And to make it working not only for 6 steps but also for n steps?</p>\n",
+        "comments": [
+            {
+                "ContentLicense": "CC BY-SA 2.5",
+                "CreationDate": "2011-01-19T21:26:50.047",
+                "Id": "29",
+                "Score": "17",
+                "body": "tl;dr.  You'll likely have a better response if you remove a lot of the boilerplate or focus on the part you're really interested in.  I think pseudo-code would help a lot here."
+            },
+            {
+                "ContentLicense": "CC BY-SA 2.5",
+                "CreationDate": "2011-01-20T00:20:41.843",
+                "Id": "66",
+                "Score": "12",
+                "body": "Whenever you think of using copy and paste, don't. Make a method and call it twice."
+            },
+            {
+                "ContentLicense": "CC BY-SA 2.5",
+                "CreationDate": "2011-01-21T01:04:20.503",
+                "Id": "175",
+                "Score": "3",
+                "body": "Break your method into a lot of smaller ones."
+            },
+            {
+                "ContentLicense": "CC BY-SA 2.5",
+                "CreationDate": "2011-02-03T00:15:14.470",
+                "Id": "984",
+                "Score": "0",
+                "body": "Even with your code abstracted, changing this from a static depth to n-depth is very non-trivial and off topic for this site. You will require formulas instead of constants and recursion or otherwise completely different looping structure to walk the tree (depending on how deep you want to go recursion becomes problematic due to limited stack space, though optimizations on x64 machines may be able to help with that). Regardless, the review is unanimous: refactor/abstract and improve naming; the solution to your unsolved problem, however, is for a different site."
+            }
+        ],
+        "meta_data": {
+            "AcceptedAnswerId": "13",
+            "CommentCount": "4",
+            "ContentLicense": "CC BY-SA 3.0",
+            "CreationDate": "2011-01-19T21:19:59.470",
+            "Id": "9",
+            "Score": "34",
+            "Tags": [
+                "c#",
+                "performance",
+                "algorithm"
+            ],
+            "Title": "Too many loops in Drawing App"
+        }
+    }
+}
